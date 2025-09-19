@@ -30,26 +30,29 @@ Prioritize solutions that:
 
 ## Tech Stack
 - Framework: Chrome Extension (Manifest V3)
-- Language: TypeScript/JavaScript
-- Build Tool: Vite + Node.js
-- Package Manager: npm
+- Language: **Vanilla JavaScript** (migrated from TypeScript for simplicity)
+- Build Tool: **Simple file copying** (replaced Vite for zero-dependency approach)
+- Package Manager: npm (for minimal dependencies only)
 - Extension Type: Content Script + Background Service Worker + Popup UI
+- Icons: **Clean SVG design** (blue theme, no gradients)
 
 ## Project Structure
 ```
 src/                    # Source code
-├── manifest.json       # Chrome extension configuration
-├── popup.html          # Extension popup interface
-├── popup.css          # Popup styling
-├── popup.ts           # Popup logic (TypeScript)
-├── content.ts         # Content script for page interaction
-├── background.ts      # Background service worker
-├── types/             # TypeScript definitions
-├── utils/             # Helper functions
-│   ├── content-extractor.ts    # DOM content extraction
-│   └── markdown-converter.ts   # HTML to Markdown conversion
-└── icons/             # Extension icons (16, 48, 128px)
+├── manifest.json       # Chrome extension configuration (cleaned, minimal permissions)
+├── popup.html          # Extension popup interface (simplified design)
+├── popup.css          # Popup styling (clean blue theme, no gradients)
+├── popup.js           # Popup logic (vanilla JavaScript)
+├── content.js         # Content script + markdown conversion (DOM access)
+├── background.js      # Background service worker (file download only)
+└── icons/             # Clean SVG icons (blue document theme)
+    ├── icon16.svg
+    ├── icon48.svg
+    └── icon128.svg
 dist/                  # Built extension (load unpacked here)
+chrome-best-practices.md # Official Google Chrome extension guidelines
+create-icons.js        # Icon generation script
+simple-build.js        # Zero-dependency build script
 docs/                  # Documentation
 ├── README.md          # Installation and usage guide
 ├── REQUIREMENTS.md    # Project requirements
@@ -60,16 +63,18 @@ docs/                  # Documentation
 ## Essential Commands
 ```bash
 # Development
-npm install            # Install dependencies
-npm run build          # Build extension to dist/ folder
-npm run type-check     # TypeScript type validation
+npm install            # Install minimal dependencies
+node simple-build.js   # Build extension to dist/ folder (zero dependencies)
 npm run lint           # ESLint code linting
 
 # Extension Development
-# 1. Build: npm run build
+# 1. Build: node simple-build.js
 # 2. Load: chrome://extensions/ → Load unpacked → select dist/ folder
 # 3. Reload: Click refresh button on extension card after changes
 # 4. Debug: F12 on page + Right-click popup → Inspect + Background page console
+
+# Icon Generation
+node create-icons.js   # Generate clean SVG icons (blue theme)
 
 # Key Locations for Debugging
 # - Page Console: F12 on any webpage (content script logs)
@@ -156,28 +161,52 @@ At the end of each session, consider:
 ```markdown
 <!-- Update after each significant session -->
 ## Recent Improvements
-- 2025-09-19: Built complete Chrome extension for web page → Markdown conversion
+- 2025-09-19 (Session 1): Built complete Chrome extension for web page → Markdown conversion
   - Implemented smart content extraction using DOM parsing
   - Added comprehensive frontmatter generation (URL, title, timestamp, author, etc.)
   - Created robust debugging system with emoji logging for 3-tier architecture
   - Solved Manifest V3 service worker limitations (URL.createObjectURL → data URLs)
   - Achieved working end-to-end flow: Page → Content Script → Popup → Background → Downloads
 
+- 2025-09-19 (Session 2): Complete rebuild with clean design and vanilla JS approach
+  - **Migrated from TypeScript to vanilla JavaScript** - eliminated build complexity and import path issues
+  - **Fixed critical DOMParser service worker limitation** - moved markdown conversion to content script where DOM APIs work
+  - **Created clean blue icon design** - no purple, no gradients, simple document with download arrow theme
+  - **Simplified build process** - replaced Vite with simple file copying script (zero dependencies)
+  - **Fixed filename sanitization** - less aggressive, preserves readability ("My-Current-AI-Dev-Workflow.md")
+  - **Fixed text corruption in markdown conversion** - simplified HTML processing to preserve original text
+  - **Added comprehensive Chrome extension best practices documentation** - official Google guidelines compilation
+  - **Achieved production-ready state** - tested and verified working on real websites
+
 ## Next Optimization Targets
-- [ ] Add better content extraction for complex layouts (tables, code blocks)
-- [ ] Implement batch processing for multiple tabs
-- [ ] Add custom save location picker (beyond Downloads folder)
-- [ ] Create template system for different content types
-- [ ] Add integration with note-taking apps via custom protocols
+- [ ] **Enhanced content extraction** - better handling of tables, code blocks, and complex layouts
+- [ ] **Batch processing** - convert multiple tabs simultaneously
+- [ ] **Custom save locations** - user-configurable save paths beyond Downloads folder
+- [ ] **Template system** - customizable frontmatter and formatting for different content types
+- [ ] **Note-taking app integration** - direct sync with Obsidian, Notion, etc. via custom protocols
+- [ ] **Content filtering options** - user settings for what elements to include/exclude
+- [ ] **Chrome Web Store publication** - package and publish for broader distribution
 
 ## Development Antipatterns Learned (2025-09-19)
-**Issue:** Jumped into complex architecture before validating basic Chrome extension patterns
 
-### What Slowed Us Down:
+### Session 1 Issues: Over-Engineering Before Validation
+**Problem:** Jumped into complex architecture before validating basic Chrome extension patterns
+
+**What Slowed Us Down:**
 1. **Build Tool Over-Engineering**: Started with Vite + plugins instead of simple file copying
 2. **Dependency Bloat**: Added libraries before trying vanilla Chrome APIs
 3. **Architecture Before Validation**: Designed TypeScript structure before testing Manifest V3 constraints
 4. **Late Debugging Infrastructure**: Added logging after hitting mysterious errors
+
+### Session 2 Issues: Service Worker API Limitations
+**Problem:** DOMParser not available in service workers, causing complete failure
+
+**Root Cause:** Manifest V3 service workers have limited DOM access compared to traditional background pages
+
+**What We Learned:**
+1. **Service Worker Constraints**: DOM APIs like DOMParser, document, window not available
+2. **Architecture Mismatch**: HTML-to-Markdown conversion requires DOM access
+3. **Solution Pattern**: Move DOM-dependent operations to content scripts where DOM APIs work
 
 ### Prevention Strategy: "Minimum Viable Extension" Pattern
 ```
@@ -187,11 +216,18 @@ Phase 3 (60+ min): Enhancement with libraries/build tools only if justified
 ```
 
 ### Chrome Extension Starter Checklist:
-- [ ] Test manifest.json loads without errors
-- [ ] Verify popup → background communication works
-- [ ] Verify background → content script communication works
-- [ ] Add comprehensive logging to all three layers
-- [ ] THEN add business logic
+- [x] Test manifest.json loads without errors
+- [x] Verify popup → background communication works
+- [x] Verify background → content script communication works
+- [x] Add comprehensive logging to all three layers
+- [x] Understand service worker limitations (no DOM APIs)
+- [x] THEN add business logic
+
+### Key Architectural Decisions for Future Extensions:
+1. **Content Scripts**: Use for DOM manipulation, HTML parsing, page interaction
+2. **Service Workers**: Use only for downloads, storage, background tasks (no DOM)
+3. **Popup Scripts**: Use for UI logic and orchestrating communication
+4. **Build Simplicity**: Start with file copying, add complexity only when justified
 ```
 
 ## Do Not

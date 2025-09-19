@@ -1,5 +1,7 @@
 // Content script for page content extraction
-// Runs on every web page, extracts main content
+// Runs on every web page, extracts main content using Defuddle
+
+// Defuddle will be loaded as a script tag
 
 class ContentExtractor {
   constructor() {
@@ -26,32 +28,64 @@ class ContentExtractor {
     const url = window.location.href;
     const domain = window.location.hostname;
 
-    // Extract basic metadata
-    const title = this.getTitle();
-    const description = this.getDescription();
-    const author = this.getAuthor();
+    try {
+      // Use Defuddle for intelligent content extraction
+      const defuddle = new Defuddle(document);
+      const defuddleResult = defuddle.parse();
 
-    // Extract main content
-    const content = this.getMainContent();
-    const wordCount = this.countWords(content);
+      console.log('🔍 Defuddle result structure:', {
+        title: defuddleResult.title?.substring(0, 50),
+        contentType: typeof defuddleResult.content,
+        contentPreview: defuddleResult.content?.substring(0, 200),
+        hasHTML: defuddleResult.content?.includes('<'),
+        keys: Object.keys(defuddleResult)
+      });
 
-    // Convert to markdown
-    const markdown = this.convertToMarkdown(content);
+      // Use Defuddle results with fallbacks to our manual methods
+      const title = defuddleResult.title || this.getTitle();
+      const description = defuddleResult.description || this.getDescription();
+      const author = defuddleResult.author || this.getAuthor();
+      const content = defuddleResult.content || this.getMainContent();
 
-    // Generate timestamp
-    const timestamp = new Date().toISOString();
+      const wordCount = this.countWords(content);
+      const markdown = this.convertToMarkdown(content);
+      const timestamp = new Date().toISOString();
 
-    return {
-      url,
-      domain,
-      title,
-      description,
-      author,
-      content,
-      markdown,
-      wordCount,
-      timestamp
-    };
+      return {
+        url,
+        domain,
+        title,
+        description,
+        author,
+        content,
+        markdown,
+        wordCount,
+        timestamp
+      };
+    } catch (error) {
+      console.error('Defuddle extraction failed, falling back to manual extraction:', error);
+
+      // Fallback to original manual extraction
+      const title = this.getTitle();
+      const description = this.getDescription();
+      const author = this.getAuthor();
+      const content = this.getMainContent();
+      const wordCount = this.countWords(content);
+      const markdown = this.convertToMarkdown(content);
+      const timestamp = new Date().toISOString();
+
+      return {
+        url,
+        domain,
+        title,
+        description,
+        author,
+        content,
+        markdown,
+        wordCount,
+        timestamp
+      };
+    }
   }
 
   getTitle() {
@@ -219,12 +253,15 @@ class ContentExtractor {
     // Get clean text and preserve some basic structure
     let markdown = this.htmlToSimpleMarkdown(temp);
 
-    // Clean up the result
+    // Clean up the result - preserve paragraph structure
     markdown = markdown
-      // Fix multiple spaces
-      .replace(/\s+/g, ' ')
-      // Fix multiple newlines
+      // Fix multiple spaces within lines (but preserve newlines)
+      .replace(/[ \t]+/g, ' ')
+      // Fix excessive newlines (3+ becomes 2)
       .replace(/\n{3,}/g, '\n\n')
+      // Fix spaces around newlines
+      .replace(/ +\n/g, '\n')
+      .replace(/\n +/g, '\n')
       // Trim
       .trim();
 
@@ -243,22 +280,22 @@ class ContentExtractor {
 
         switch (tagName) {
           case 'h1':
-            result += `\n# ${innerText}\n\n`;
+            result += `\n# ${this.htmlToSimpleMarkdown(node)}\n\n`;
             break;
           case 'h2':
-            result += `\n## ${innerText}\n\n`;
+            result += `\n## ${this.htmlToSimpleMarkdown(node)}\n\n`;
             break;
           case 'h3':
-            result += `\n### ${innerText}\n\n`;
+            result += `\n### ${this.htmlToSimpleMarkdown(node)}\n\n`;
             break;
           case 'h4':
-            result += `\n#### ${innerText}\n\n`;
+            result += `\n#### ${this.htmlToSimpleMarkdown(node)}\n\n`;
             break;
           case 'h5':
-            result += `\n##### ${innerText}\n\n`;
+            result += `\n##### ${this.htmlToSimpleMarkdown(node)}\n\n`;
             break;
           case 'h6':
-            result += `\n###### ${innerText}\n\n`;
+            result += `\n###### ${this.htmlToSimpleMarkdown(node)}\n\n`;
             break;
           case 'p':
             result += `\n${this.htmlToSimpleMarkdown(node)}\n\n`;
@@ -304,6 +341,15 @@ class ContentExtractor {
               result += `${bullet} ${item.textContent.trim()}\n`;
             });
             result += '\n';
+            break;
+          case 'div':
+          case 'section':
+          case 'article':
+            // Block elements that might contain paragraphs
+            const divContent = this.htmlToSimpleMarkdown(node);
+            if (divContent.trim()) {
+              result += `\n${divContent}\n`;
+            }
             break;
           default:
             // For other elements, just get their text content
