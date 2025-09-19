@@ -10,47 +10,28 @@
   <div class="container">
     <header class="header">
       <h1 class="title">Page to Markdown</h1>
-      <p class="subtitle">Convert this page for Claude Code</p>
+      <p class="subtitle">Convert this page with one click</p>
     </header>
 
     <main class="main">
-      <div id="status-display" class="status">
-        <div class="status-icon">📄</div>
-        <div class="status-text">Ready to convert page</div>
+      <div id="status" class="status">
+        <span id="status-icon">📄</span>
+        <span id="status-text">Ready to convert</span>
       </div>
 
-      <div id="page-info" class="page-info" style="display: none;">
-        <div class="info-row">
-          <span class="label">Title:</span>
-          <span id="page-title" class="value"></span>
-        </div>
-        <div class="info-row">
-          <span class="label">Domain:</span>
-          <span id="page-domain" class="value"></span>
-        </div>
-        <div class="info-row">
-          <span class="label">Words:</span>
-          <span id="word-count" class="value"></span>
-        </div>
-      </div>
+      <button id="convert-btn" class="convert-btn">
+        <span id="btn-icon">⬇️</span>
+        <span id="btn-text">Convert & Download</span>
+      </button>
 
-      <div class="actions">
-        <button id="convert-btn" class="btn btn-primary">
-          <span class="btn-icon">⬇</span>
-          <span class="btn-text">Convert & Download</span>
-        </button>
-      </div>
-
-      <div id="error-display" class="error" style="display: none;">
-        <div class="error-icon">⚠️</div>
-        <div class="error-text"></div>
+      <div id="error" class="error hidden">
+        <span class="error-icon">⚠️</span>
+        <span id="error-text"></span>
       </div>
     </main>
 
     <footer class="footer">
-      <div class="footer-text">
-        Files saved to Downloads folder
-      </div>
+      <small>Files saved to Downloads folder</small>
     </footer>
   </div>
 

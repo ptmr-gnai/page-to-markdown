@@ -1,0 +1,24 @@
+
+<svg width="128" height="128" viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <style>
+      .doc { fill: #2563eb; }
+      .arrow { fill: #1e40af; }
+      .bg { fill: #f8fafc; stroke: #2563eb; stroke-width: 2; }
+    </style>
+  </defs>
+
+  <!-- Document background -->
+  <rect x="19.2" y="12.8" width="89.6" height="102.4"
+        rx="6.4" class="bg"/>
+
+  <!-- Document lines -->
+  <rect x="32" y="32" width="64" height="5.12" class="doc"/>
+  <rect x="32" y="44.8" width="51.2" height="5.12" class="doc"/>
+  <rect x="32" y="57.6" width="57.6" height="5.12" class="doc"/>
+
+  <!-- Download arrow -->
+  <path d="M 64 76.8 L 51.2 89.6 L 57.6 89.6
+           L 57.6 102.4 L 70.4 102.4 L 70.4 89.6
+           L 76.8 89.6 Z" class="arrow"/>
+</svg>

@@ -1,0 +1,24 @@
+
+<svg width="48" height="48" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <style>
+      .doc { fill: #2563eb; }
+      .arrow { fill: #1e40af; }
+      .bg { fill: #f8fafc; stroke: #2563eb; stroke-width: 2; }
+    </style>
+  </defs>
+
+  <!-- Document background -->
+  <rect x="7.199999999999999" y="4.800000000000001" width="33.599999999999994" height="38.400000000000006"
+        rx="2.4000000000000004" class="bg"/>
+
+  <!-- Document lines -->
+  <rect x="12" y="12" width="24" height="1.92" class="doc"/>
+  <rect x="12" y="16.799999999999997" width="19.200000000000003" height="1.92" class="doc"/>
+  <rect x="12" y="21.6" width="21.6" height="1.92" class="doc"/>
+
+  <!-- Download arrow -->
+  <path d="M 24 28.799999999999997 L 19.200000000000003 33.599999999999994 L 21.6 33.599999999999994
+           L 21.6 38.400000000000006 L 26.400000000000002 38.400000000000006 L 26.400000000000002 33.599999999999994
+           L 28.799999999999997 33.599999999999994 Z" class="arrow"/>
+</svg>

@@ -2,36 +2,31 @@
   "manifest_version": 3,
   "name": "Page to Markdown",
   "version": "1.0.0",
-  "description": "Convert web pages to Markdown format for Claude Code",
+  "description": "Convert web pages to Markdown format with one click",
+
   "permissions": [
     "activeTab",
-    "downloads",
-    "storage",
-    "scripting"
+    "downloads"
   ],
-  "host_permissions": [
-    "http://*/*",
-    "https://*/*"
-  ],
+
+  "background": {
+    "service_worker": "background.js"
+  },
+
+  "content_scripts": [{
+    "matches": ["http://*/*", "https://*/*"],
+    "js": ["content.js"],
+    "run_at": "document_idle"
+  }],
+
   "action": {
     "default_popup": "popup.html",
     "default_title": "Convert page to Markdown"
   },
+
   "icons": {
-    "16": "icons/icon16.png",
-    "48": "icons/icon48.png",
-    "128": "icons/icon128.png"
-  },
-  "background": {
-    "service_worker": "background.js"
-  },
-  "content_scripts": [
-    {
-      "matches": ["http://*/*", "https://*/*"],
-      "js": ["content.js"]
-    }
-  ],
-  "content_security_policy": {
-    "extension_pages": "script-src 'self'; object-src 'self'"
+    "16": "icons/icon16.svg",
+    "48": "icons/icon48.svg",
+    "128": "icons/icon128.svg"
   }
 }
