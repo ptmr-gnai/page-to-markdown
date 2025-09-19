@@ -1,0 +1,33 @@
+{
+  "name": "page-to-markdown-extension",
+  "version": "1.0.0",
+  "description": "A modern Chrome extension that converts web pages to Markdown for Claude Code",
+  "scripts": {
+    "dev": "vite build --watch --mode development",
+    "build": "node build-extension.js",
+    "vite-build": "vite build --mode production",
+    "type-check": "tsc --noEmit",
+    "lint": "eslint src --ext .ts,.tsx"
+  },
+  "devDependencies": {
+    "@types/chrome": "^0.0.270",
+    "@types/node": "^22.5.4",
+    "@types/turndown": "^5.0.5",
+    "@types/webextension-polyfill": "^0.12.1",
+    "@typescript-eslint/eslint-plugin": "^7.0.0",
+    "@typescript-eslint/parser": "^7.0.0",
+    "eslint": "^8.57.0",
+    "prettier": "^3.2.5",
+    "typescript": "^5.5.4",
+    "vite": "^5.4.2",
+    "vite-plugin-web-extension": "^4.1.6"
+  },
+  "dependencies": {
+    "dayjs": "^1.11.13",
+    "defuddle": "^0.6.6",
+    "dompurify": "^3.0.9",
+    "turndown": "^7.2.0",
+    "turndown-plugin-gfm": "^1.0.2",
+    "webextension-polyfill": "^0.12.0"
+  }
+}
