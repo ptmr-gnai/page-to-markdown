@@ -3,35 +3,34 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Page to Markdown</title>
+  <title>Save as Markdown</title>
   <link rel="stylesheet" href="popup.css">
+  <link rel="stylesheet" href="icons.css">
 </head>
 <body>
   <div class="container">
-    <header class="header">
-      <h1 class="title">Page to Markdown</h1>
-      <p class="subtitle">Convert this page with one click</p>
-    </header>
-
     <main class="main">
-      <div id="status" class="status">
-        <span id="status-icon">📄</span>
-        <span id="status-text">Ready to convert</span>
+      <!-- Page context for user confidence -->
+      <div class="page-info">
+        <div class="page-title" id="page-title">Loading page...</div>
+        <div class="page-domain" id="page-domain"></div>
       </div>
 
-      <button id="convert-btn" class="convert-btn">
-        <span id="btn-icon">⬇️</span>
-        <span id="btn-text">Convert & Download</span>
+      <!-- Single clear action -->
+      <button id="convert-btn" class="primary-action" aria-describedby="btn-detail">
+        <span class="icon icon-download" id="btn-icon"></span>
+        <span id="btn-text">Save as Markdown</span>
       </button>
 
-      <div id="error" class="error hidden">
-        <span class="error-icon">⚠️</span>
+      <!-- Error state only when needed -->
+      <div id="error" class="error-message hidden">
+        <span class="icon icon-alert"></span>
         <span id="error-text"></span>
       </div>
     </main>
 
     <footer class="footer">
-      <small>Files saved to Downloads folder</small>
+      <div class="help-text" id="btn-detail">Saves page content to Downloads folder</div>
     </footer>
   </div>
 

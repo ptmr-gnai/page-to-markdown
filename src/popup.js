@@ -1,9 +1,9 @@
-// Simple popup script - vanilla JS, no dependencies
+// Modern popup script - clean UX focused
 class PopupManager {
   constructor() {
     this.elements = {
-      statusIcon: document.getElementById('status-icon'),
-      statusText: document.getElementById('status-text'),
+      pageTitle: document.getElementById('page-title'),
+      pageDomain: document.getElementById('page-domain'),
       convertBtn: document.getElementById('convert-btn'),
       btnIcon: document.getElementById('btn-icon'),
       btnText: document.getElementById('btn-text'),
@@ -24,13 +24,23 @@ class PopupManager {
       const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
 
       if (!tab?.url || !tab.url.startsWith('http')) {
-        this.showError('This page cannot be converted. Navigate to a web page.');
+        this.elements.pageTitle.textContent = 'Cannot convert this page';
+        this.elements.pageDomain.textContent = 'Navigate to a web page to continue';
+        this.showError('This page cannot be converted. Please navigate to a web page.');
         return;
       }
 
-      this.updateStatus('📄', 'Ready to convert');
+      // Extract and display page context
+      const url = new URL(tab.url);
+      this.elements.pageTitle.textContent = tab.title || 'Untitled Page';
+      this.elements.pageDomain.textContent = url.hostname;
+
+      // Update button icon to document ready state
+      this.elements.btnIcon.className = 'icon icon-download';
     } catch (error) {
-      this.showError('Failed to access current tab');
+      this.elements.pageTitle.textContent = 'Error loading page';
+      this.elements.pageDomain.textContent = '';
+      this.showError('Failed to access current tab. Please refresh and try again.');
     }
   }
 
@@ -39,25 +49,32 @@ class PopupManager {
 
     try {
       this.hideError();
-      this.setButtonState(true, '🔄', 'Processing...');
+      this.setButtonState(true, 'icon-spinner', 'Extracting content...');
 
       // Step 1: Get current tab
       const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
       if (!tab?.id) throw new Error('No active tab found');
 
       // Step 2: Extract content from page
-      this.updateStatus('🔍', 'Extracting content...');
-
-      const response = await chrome.tabs.sendMessage(tab.id, {
-        action: 'extractContent'
-      });
+      let response;
+      try {
+        response = await chrome.tabs.sendMessage(tab.id, {
+          action: 'extractContent'
+        });
+      } catch (chromeError) {
+        if (chromeError.message.includes('Receiving end does not exist')) {
+          throw new Error('Connection failed. Please refresh the page and try again.');
+        }
+        throw chromeError;
+      }
 
       if (!response.success) {
-        throw new Error(response.error || 'Failed to extract content');
+        const errorMsg = response.error || 'Failed to extract content';
+        throw new Error(errorMsg);
       }
 
       // Step 3: Send to background for download
-      this.updateStatus('⬇️', 'Downloading file...');
+      this.setButtonState(true, 'icon-spinner', 'Saving file...');
 
       const result = await chrome.runtime.sendMessage({
         action: 'downloadMarkdown',
@@ -69,47 +86,70 @@ class PopupManager {
       }
 
       // Step 4: Success
-      this.updateStatus('✅', 'Downloaded successfully!');
-      this.setButtonState(false, '✅', 'Downloaded');
+      this.setButtonState(false, 'icon-check', 'Saved!', 'success');
 
       // Reset after 2 seconds
       setTimeout(() => {
-        this.updateStatus('📄', 'Ready to convert');
-        this.setButtonState(false, '⬇️', 'Convert & Download');
+        this.setButtonState(false, 'icon-download', 'Save as Markdown');
       }, 2000);
 
     } catch (error) {
       console.error('Conversion failed:', error);
       this.showError(error.message);
-      this.updateStatus('❌', 'Conversion failed');
-      this.setButtonState(false, '⬇️', 'Convert & Download');
+      this.setButtonState(false, 'icon-download', 'Save as Markdown', 'error');
+
+      // Clear error state after a moment
+      setTimeout(() => {
+        this.elements.convertBtn.classList.remove('error');
+      }, 3000);
     }
   }
 
-  updateStatus(icon, text) {
-    this.elements.statusIcon.textContent = icon;
-    this.elements.statusText.textContent = text;
-  }
-
-  setButtonState(disabled, icon, text) {
+  setButtonState(disabled, iconClass, text, stateClass = '') {
     this.elements.convertBtn.disabled = disabled;
-    this.elements.btnIcon.textContent = icon;
+    this.elements.btnIcon.className = `icon ${iconClass}`;
     this.elements.btnText.textContent = text;
 
-    if (disabled) {
+    // Clear all state classes
+    this.elements.convertBtn.classList.remove('processing', 'success', 'error');
+
+    // Add new state class if provided
+    if (stateClass) {
+      this.elements.convertBtn.classList.add(stateClass);
+    } else if (disabled) {
       this.elements.convertBtn.classList.add('processing');
-    } else {
-      this.elements.convertBtn.classList.remove('processing');
     }
   }
 
   showError(message) {
     this.elements.errorText.textContent = message;
     this.elements.error.classList.remove('hidden');
+
+    // For connection errors, hide button and footer for clean layout
+    if (message.includes('Connection failed') || message.includes('refresh')) {
+      this.setErrorState(true);
+    }
   }
 
   hideError() {
     this.elements.error.classList.add('hidden');
+    this.setErrorState(false);
+  }
+
+  setErrorState(isConnectionError) {
+    const button = this.elements.convertBtn;
+    const footer = document.querySelector('.footer');
+    const container = document.querySelector('.container');
+
+    if (isConnectionError) {
+      button.style.display = 'none';
+      footer.style.display = 'none';
+      container.classList.add('error-state');
+    } else {
+      button.style.display = 'flex';
+      footer.style.display = 'block';
+      container.classList.remove('error-state');
+    }
   }
 }
 

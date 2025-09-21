@@ -1,4 +1,4 @@
-/* Clean, minimal popup styling - no purple, no gradients */
+/* Modern, professional popup design */
 * {
   margin: 0;
   padding: 0;
@@ -6,131 +6,148 @@
 }
 
 body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', system-ui, sans-serif;
   font-size: 14px;
   background: #ffffff;
-  color: #1f2937;
-  width: 320px;
-  min-height: 200px;
+  color: #0f172a;
+  width: 340px;
+  min-height: 240px;
 }
 
 .container {
-  padding: 16px;
-}
-
-.header {
-  text-align: center;
-  margin-bottom: 20px;
-  border-bottom: 1px solid #e5e7eb;
-  padding-bottom: 16px;
-}
-
-.title {
-  font-size: 18px;
-  font-weight: 600;
-  color: #111827;
-  margin-bottom: 4px;
-}
-
-.subtitle {
-  font-size: 13px;
-  color: #6b7280;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  min-height: 240px;
 }
 
 .main {
-  margin-bottom: 16px;
-}
-
-.status {
+  flex: 1;
   display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 12px;
-  background: #f9fafb;
-  border: 1px solid #e5e7eb;
-  border-radius: 6px;
-  margin-bottom: 16px;
-  font-size: 13px;
-  color: #374151;
+  flex-direction: column;
+  gap: 20px;
+  min-height: 0; /* Allow flexbox to shrink */
 }
 
-#status-icon {
+/* Page context for user confidence */
+.page-info {
+  text-align: center;
+  padding: 16px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+}
+
+.page-title {
   font-size: 16px;
+  font-weight: 600;
+  color: #1e293b;
+  margin-bottom: 4px;
+  line-height: 1.3;
+  /* Truncate long titles */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-.convert-btn {
+.page-domain {
+  font-size: 12px;
+  color: #64748b;
+  font-weight: 500;
+  text-transform: lowercase;
+}
+
+/* Primary action button */
+.primary-action {
   width: 100%;
+  height: 48px;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  padding: 12px 16px;
-  background: #2563eb;
+  gap: 10px;
+  padding: 0 20px;
+  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
   color: white;
   border: none;
-  border-radius: 6px;
-  font-size: 14px;
-  font-weight: 500;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
   cursor: pointer;
-  transition: background-color 0.2s ease;
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
-.convert-btn:hover {
-  background: #1d4ed8;
+.primary-action:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
 }
 
-.convert-btn:active {
-  background: #1e40af;
+.primary-action:active:not(:disabled) {
+  transform: translateY(0);
+  box-shadow: 0 2px 6px rgba(37, 99, 235, 0.3);
 }
 
-.convert-btn:disabled {
-  background: #9ca3af;
+.primary-action:disabled {
+  opacity: 0.7;
   cursor: not-allowed;
+  transform: none;
 }
 
-.convert-btn.processing {
+.primary-action.processing {
   background: #6b7280;
 }
 
-#btn-icon {
-  font-size: 16px;
+.primary-action.success {
+  background: #10b981;
 }
 
-.error {
+.primary-action.error {
+  background: #dc2626;
+}
+
+/* Error messaging */
+.error-message {
   display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 12px;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 16px;
   background: #fef2f2;
   border: 1px solid #fecaca;
-  border-radius: 6px;
-  margin-top: 12px;
-  font-size: 13px;
+  border-radius: 8px;
+  font-size: 14px;
   color: #dc2626;
+  line-height: 1.5;
+  text-align: center;
+  /* When it's the main content, give it more presence */
+  flex-shrink: 0;
 }
 
-.error.hidden {
+/* When error is the primary content (button hidden), make it more prominent */
+.container.error-state .error-message {
+  padding: 20px;
+  font-size: 15px;
+  background: #fef2f2;
+  border: 2px solid #f87171;
+  justify-content: center;
+  margin-top: 8px;
+}
+
+.error-message.hidden {
   display: none;
 }
 
-.error-icon {
-  font-size: 16px;
-}
-
+/* Footer - fixed position to maintain consistent spacing */
 .footer {
-  text-align: center;
-  padding-top: 12px;
-  border-top: 1px solid #e5e7eb;
+  margin-top: auto;
+  padding-top: 16px;
+  border-top: 1px solid #e2e8f0;
+  flex-shrink: 0; /* Prevent footer from shrinking */
 }
 
-.footer small {
-  color: #6b7280;
+.help-text {
   font-size: 12px;
+  color: #64748b;
+  text-align: center;
+  line-height: 1.3;
 }
-
-/* Processing states */
-.status.extracting #status-icon::before { content: '🔍'; }
-.status.converting #status-icon::before { content: '📝'; }
-.status.downloading #status-icon::before { content: '⬇️'; }
-.status.complete #status-icon::before { content: '✅'; }
-.status.error #status-icon::before { content: '❌'; }
