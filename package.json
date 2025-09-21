@@ -4,7 +4,7 @@
   "description": "A modern Chrome extension that converts web pages to Markdown for Claude Code",
   "scripts": {
     "dev": "vite build --watch --mode development",
-    "build": "node build-extension.js",
+    "build": "node scripts/build-extension.js",
     "vite-build": "vite build --mode production",
     "type-check": "tsc --noEmit",
     "lint": "eslint src --ext .ts,.tsx"

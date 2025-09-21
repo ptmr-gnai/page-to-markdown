@@ -7,8 +7,8 @@ const { execSync } = require('child_process');
 const fs = require('fs');
 const path = require('path');
 
-const sourceIcon = 'clip-icon.png';
-const iconDir = 'src/icons';
+const sourceIcon = '../assets/clip-icon.png';
+const iconDir = '../src/icons';
 const sizes = [16, 48, 128];
 
 console.log('🎨 Resizing clip icon for Chrome extension...');
