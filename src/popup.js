@@ -125,8 +125,20 @@ class PopupManager {
     this.elements.errorText.textContent = message;
     this.elements.error.classList.remove('hidden');
 
-    // For connection errors, hide button and footer for clean layout
-    if (message.includes('Connection failed') || message.includes('refresh')) {
+    // For critical errors that prevent extension functionality, hide button and footer for clean layout
+    const criticalErrors = [
+      'Connection failed',
+      'refresh',
+      'Cannot convert this page',
+      'navigate to a web page',
+      'Failed to access current tab'
+    ];
+
+    const isCriticalError = criticalErrors.some(errorType =>
+      message.toLowerCase().includes(errorType.toLowerCase())
+    );
+
+    if (isCriticalError) {
       this.setErrorState(true);
     }
   }
